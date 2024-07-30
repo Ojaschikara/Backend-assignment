@@ -1,0 +1,87 @@
+1. Write Mongo query to retrieve documents from the orders in ascending order by total:
+Ans:-
+db.orders.find().sort({total: 1})
+
+2. Write Mongo query to retrieve the oldest paymentMethod from the payments collection as "_id":
+Ans:-
+db.payments.find().sort({payment_date: 1}).limit(1).project({paymentMethod: 1})
+
+3. Write Mongo query to retrieve 2nd and 3rd buyers from the buyers collection:
+Ans:-
+db.buyers.find().skip(1).limit(2)
+
+4. Write Mongo query to retrieve the most Expensive product from order_details:
+Ans:-
+db.order_details.find().sort({price: -1}).limit(1)
+
+5. Write Mongo query to retrieve the first order from the orders as per the order_date:
+Ans:-
+db.orders.find().sort({order_date: 1}).limit(1)
+
+6. Write Mongo query to retrieve the last 3 orders from the orders collection who have less total amount:
+Ans:-
+db.orders.find().sort({total: 1}).limit(3)
+
+7. Write Mongo query to retrieve the most recent shipped order from the orders collection:
+Ans:-
+db.orders.find({status: "shipped"}).sort({ship_date: -1}).limit(1)
+
+8. Write Mongo query to get the total revenue from all orders:
+Ans:-
+db.orders.aggregate([{ $group: { _id: null, totalRevenue: { $sum: "$total" }}}])
+
+9. Write Mongo query to retrieve all the orders that shipped before 2022-05-26:
+Ans:-
+db.orders.find({ship_date: { $lt: "2022-05-26" }})
+
+10. Write Mongo query to find the maximum price as maxPrice of products and their names as name for each category:
+Ans:-
+db.products.aggregate([
+  { $group: { _id: "$category_id", maxPrice: { $max: "$price" }, names: { $push: "$name" }}}
+])
+
+11. Write Mongo query to find Most used payment Method as paymentMethod and the number of time it is used as count:
+Ans:-
+db.payments.aggregate([
+  { $group: { _id: "$paymentMethod", count: { $sum: 1 }}},
+  { $sort: { count: -1 }},
+  { $limit: 1 }
+])
+
+12. Write Mongo query to find the total count of orders by status:
+Ans:-
+db.orders.aggregate([{ $group: { _id: "$status", count: { $sum: 1 }}}])
+
+13. Write Mongo query to retrieve the orders grouped by customer_id with the max total:
+Ans:-
+db.orders.aggregate([
+  { $group: { _id: "$customer_id", maxTotal: { $max: "$total" }}}
+])
+
+14. Assess the impact of RAM capacity on laptop prices and ratings. Group laptops by RAM capacity and analyze the average price and rating for each group. Identify any significant trends or outliers:
+Ans:-
+db.laptops.aggregate([
+  { $group: { _id: "$ram_capacity", averagePrice: { $avg: "$price" }, averageRating: { $avg: "$rating" }}},
+  { $sort: { _id: 1 }}
+])
+
+15. Investigate the price and rating distribution for gaming laptops. Identify which brands are leading in the gaming laptop market by comparing the average price, rating, GPU type, and RAM capacity for laptops categorized as gaming:
+Ans:-
+db.laptops.aggregate([
+  { $match: { category: "gaming" }},
+  { $group: { _id: "$brand", averagePrice: { $avg: "$price" }, averageRating: { $avg: "$rating" }, gpuTypes: { $addToSet: "$gpu_type" }, ramCapacities: { $addToSet: "$ram_capacity" }}}
+])
+
+16. Analyze the warranty periods offered by different brands and their correlation with laptop prices and ratings. Identify any patterns or insights regarding how warranty periods influence consumer ratings and pricing strategies:
+Ans:-
+db.laptops.aggregate([
+  { $group: { _id: "$brand", warrantyPeriods: { $push: "$warranty_period" }, averagePrice: { $avg: "$price" }, averageRating: { $avg: "$rating" }}},
+  { $unwind: "$warrantyPeriods" },
+  { $group: { _id: { brand: "$_id", warrantyPeriod: "$warrantyPeriods" }, averagePrice: { $avg: "$averagePrice" }, averageRating: { $avg: "$averageRating" }}}
+])
+
+17. Examine the relationship between processor brand (Intel, AMD, Apple) and laptop price, rating, and primary storage capacity. Group the laptops by processor brand and compare their average price, rating, and storage statistics to identify key differences:
+Ans:-
+db.laptops.aggregate([
+  { $group: { _id: "$processor_brand", averagePrice: { $avg: "$price" }, averageRating: { $avg: "$rating" }, averageStorage: { $avg: "$primary_storage_capacity" }}}
+])

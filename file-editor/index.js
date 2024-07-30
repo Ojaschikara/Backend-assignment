@@ -92,16 +92,3 @@ function listDirectory(directoryPath) {
 
 
 
-// node index.js create test.txt
-
-// node index.js read test.txt
-
-// node index.js append test.txt "Hello, World!"
-
-// node index.js delete test.txt
-
-// node index.js rename test.txt new.txt
-
-// node index.js list .
-
-// complete
